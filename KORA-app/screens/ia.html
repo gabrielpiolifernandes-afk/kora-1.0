@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>KORA AI — Assistente</title>
+  <link rel="stylesheet" href="../assets/css/app.css">
+  <style>
+    /* Estilos específicos do chat */
+    .chat-stream {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 16px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .msg {
+      max-width: 84%;
+      padding: 12px 14px;
+      font-size: 14px;
+      line-height: 1.5;
+      letter-spacing: -.005em;
+      animation: pop .25s ease;
+    }
+    @keyframes pop {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: none; }
+    }
+    .msg--ai {
+      align-self: flex-start;
+      background: var(--bg-alt);
+      border: 1px solid var(--line);
+      border-radius: 18px 18px 18px 4px;
+      color: var(--fg);
+    }
+    .msg--user {
+      align-self: flex-end;
+      background: var(--accent);
+      color: var(--kora-off-white);
+      border-radius: 18px 18px 4px 18px;
+    }
+    .msg__hint {
+      font-size: 10px;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--fg-subtle);
+      margin: 0 4px 4px;
+      align-self: flex-start;
+      font-weight: 700;
+    }
+    .msg__hint--user {
+      align-self: flex-end;
+      color: var(--accent);
+    }
+    .msg__data {
+      margin-top: 10px;
+      padding: 10px 12px;
+      background: var(--bg-warm);
+      border-left: 2px solid var(--accent);
+      border-radius: 0 10px 10px 0;
+      font-size: 12px;
+      color: var(--fg-muted);
+    }
+    .msg__data strong { color: var(--fg); font-weight: 800; }
+    .quick {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    .quick a {
+      padding: 8px 12px;
+      background: var(--bg-warm);
+      border: 1px solid var(--warm);
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--fg);
+      text-decoration: none;
+    }
+    .typing {
+      align-self: flex-start;
+      background: var(--bg-alt);
+      border: 1px solid var(--line);
+      border-radius: 18px 18px 18px 4px;
+      padding: 14px 16px;
+      display: inline-flex;
+      gap: 4px;
+    }
+    .typing span {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--fg-muted);
+      animation: bounce 1.2s infinite;
+    }
+    .typing span:nth-child(2) { animation-delay: .2s; }
+    .typing span:nth-child(3) { animation-delay: .4s; }
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); opacity: .4; }
+      30% { transform: translateY(-4px); opacity: 1; }
+    }
+    .composer {
+      position: absolute;
+      bottom: var(--tab-h);
+      left: 0; right: 0;
+      background: var(--bg);
+      border-top: 1px solid var(--line);
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .composer__input {
+      flex: 1;
+      font: inherit;
+      background: var(--bg-alt);
+      border: 1px solid var(--line);
+      border-radius: 99px;
+      padding: 10px 16px;
+      color: var(--fg);
+      font-size: 14px;
+    }
+    .composer__input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .composer__send {
+      background: var(--accent);
+      color: var(--bg);
+      border: 0;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .composer__send svg { width: 18px; height: 18px; }
+    .ai-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--kora-black);
+      color: var(--accent-soft);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 12px;
+      letter-spacing: .1em;
+    }
+    .ai-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--bg-warm);
+      border-bottom: 1px solid var(--warm);
+    }
+    .ai-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--kora-brown);
+      font-weight: 700;
+    }
+    .ai-status::before {
+      content: "";
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--kora-brown);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .35; }
+    }
+    .suggest-chips {
+      display: flex;
+      gap: 8px;
+      padding: 8px 14px;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      border-top: 1px solid var(--line-soft);
+      background: var(--bg);
+    }
+    .suggest-chips::-webkit-scrollbar { display: none; }
+    .suggest-chips button {
+      flex-shrink: 0;
+      background: var(--bg-alt);
+      border: 1px solid var(--line);
+      border-radius: 99px;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--fg);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .suggest-chips button:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+<div class="device">
+  <div class="device__screen">
+
+    <div class="status-bar">
+      <span>9:41</span>
+      <span class="status-bar__icons"><span>●●●</span> <span>●</span></span>
+    </div>
+
+    <header class="appbar appbar--bordered">
+      <a class="appbar__btn" href="inicio.html" aria-label="Voltar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>
+      </a>
+      <div class="appbar__title">KORA AI</div>
+      <button class="appbar__btn" aria-label="Mais opções">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="6" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="18" r="1.5"/></svg>
+      </button>
+    </header>
+
+    <!-- AI Header -->
+    <div class="ai-header">
+      <div class="ai-avatar">K</div>
+      <div style="flex:1">
+        <div style="font-weight: 800; font-size: 13px">Sua assistente KORA</div>
+        <div class="ai-status">Online · contexto atualizado há 30s</div>
+      </div>
+    </div>
+
+    <!-- Stream de mensagens -->
+    <div class="chat-stream" id="stream">
+
+      <div class="msg__hint">KORA · 09:32</div>
+      <div class="msg msg--ai">
+        Bom dia, Carolina. Notei dois pontos importantes hoje. Quer que eu comece pelo
+        <strong style="font-weight:800">alerta de Lazer</strong> ou pela
+        <strong style="font-weight:800">tendência de saldo</strong>?
+        <div class="quick">
+          <a href="#" data-q="Por que meu score caiu?">Por que meu score caiu?</a>
+          <a href="#" data-q="Quanto posso gastar?">Quanto posso gastar?</a>
+        </div>
+      </div>
+
+      <div class="msg__hint msg__hint--user">VOCÊ · 09:33</div>
+      <div class="msg msg--user">
+        E aí, KORA. Por que meu score caiu pra 67?
+      </div>
+
+      <div class="msg__hint">KORA · 09:33</div>
+      <div class="msg msg--ai">
+        Seu score na verdade <strong style="font-weight:800">subiu</strong> +4 pontos este mês 🎉.
+        O que pode ter te dado essa impressão é o pilar de <strong style="font-weight:800">Disciplina</strong>,
+        que <em>caiu</em> 12 pontos isoladamente.
+        <div class="msg__data">
+          <strong>Causa principal:</strong> seu gasto com Lazer este mês foi <strong>98% acima da média</strong>
+          dos últimos 6 meses (R$ 890 vs. média de R$ 450).
+        </div>
+        <div class="quick">
+          <a href="#" data-q="Como recupero a Disciplina?">Como recupero?</a>
+          <a href="#" data-q="Mostre os gastos de Lazer">Ver gastos de Lazer</a>
+        </div>
+      </div>
+
+      <div class="msg__hint msg__hint--user">VOCÊ · 09:34</div>
+      <div class="msg msg--user">
+        Beleza. Quanto posso gastar no fim de semana sem comprometer o pilar de Liquidez?
+      </div>
+
+      <div class="msg__hint">KORA · 09:34</div>
+      <div class="msg msg--ai">
+        Considerando sua projeção de saldo e mantendo seu pilar de Liquidez (72/100)
+        estável, recomendo <strong style="font-weight:800">até R$ 280 entre sex–dom</strong>.
+        <div class="msg__data">
+          <strong>Cálculo:</strong> saldo projetado para 02/05 = R$ 5.420 · reserva mínima recomendada = R$ 5.140 · folga semanal = R$ 280.
+        </div>
+        Quer que eu ative um <strong style="font-weight:800">alerta de orçamento</strong> que
+        te avisa se passar de R$ 220?
+      </div>
+
+      <div class="msg__hint msg__hint--user">VOCÊ · 09:35</div>
+      <div class="msg msg--user">
+        Sim, ativa por favor.
+      </div>
+
+      <div class="msg__hint">KORA · 09:35</div>
+      <div class="msg msg--ai">
+        ✓ Alerta criado. Vou te avisar quando atingir <strong style="font-weight:800">R$ 220 em Lazer</strong> entre 02/05 e 04/05.
+        <div class="msg__data">
+          <strong>Limite:</strong> R$ 280 · <strong>Aviso prévio:</strong> R$ 220 · <strong>Período:</strong> sex 02 → dom 04 mai
+        </div>
+        Mais alguma coisa? Posso também te mostrar opções de
+        <a href="investir.html" style="color:var(--accent); font-weight:800; text-decoration:underline">investimentos coerentes com seu score</a>
+        ou abrir o
+        <a href="mercado.html" style="color:var(--accent); font-weight:800; text-decoration:underline">mercado em tempo real</a>.
+      </div>
+
+      <!-- Indicador "digitando" -->
+      <div class="typing" id="typing" style="display:none">
+        <span></span><span></span><span></span>
+      </div>
+
+    </div>
+
+    <!-- Sugestões -->
+    <div class="suggest-chips">
+      <button data-q="Como economizar R$ 420?">Como economizar R$ 420?</button>
+      <button data-q="Vou conseguir investir mês que vem?">Vou investir mês que vem?</button>
+      <button data-q="Vale a pena cancelar Netflix?">Cancelar Netflix?</button>
+      <button data-q="Como subir pra Excelente?">Como subir pra Excelente?</button>
+    </div>
+
+    <!-- Composer -->
+    <div class="composer">
+      <input class="composer__input" id="input" placeholder="Pergunte algo à KORA…">
+      <button class="composer__send" id="send" aria-label="Enviar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="tabbar">
+      <a class="tab" href="inicio.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg><span>Início</span></a>
+      <a class="tab" href="score.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Score</span></a>
+      <a class="tab" href="extrato.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg><span>Extrato</span></a>
+      <a class="tab" href="investir.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8M14 7h7v7"/></svg><span>Investir</span></a>
+      <a class="tab" href="perfil.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span>Eu</span></a>
+    </nav>
+
+  </div>
+</div>
+
+<script>
+  // Resposta simulada da IA para qualquer mensagem nova (apenas demo)
+  const stream = document.getElementById('stream');
+  const input = document.getElementById('input');
+  const send = document.getElementById('send');
+  const typing = document.getElementById('typing');
+
+  const replies = [
+    "Boa pergunta. Analisando seu perfil agora… considerando seu score de 67 e os pilares atuais, minha recomendação é começar pequeno e medir o impacto em 2 semanas.",
+    "Olha só: se você reduzir Lazer em 30% e cancelar uma assinatura, libera R$ 420 por mês — o suficiente pra subir 6 pontos em Poupança até julho.",
+    "Pelo seu padrão, faz sentido. Quer que eu monte um plano de 30 dias e te mande lembretes contextualizados?",
+    "Sim, é viável. Sua estabilidade de renda (81/100) sustenta um aporte mensal recorrente. Posso simular o efeito no seu score?",
+  ];
+
+  function append(role, text) {
+    const time = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const hint = document.createElement('div');
+    hint.className = 'msg__hint' + (role === 'user' ? ' msg__hint--user' : '');
+    hint.textContent = (role === 'user' ? 'VOCÊ' : 'KORA') + ' · ' + time;
+    const m = document.createElement('div');
+    m.className = 'msg msg--' + role;
+    m.textContent = text;
+    stream.insertBefore(hint, typing);
+    stream.insertBefore(m, typing);
+    stream.scrollTop = stream.scrollHeight;
+  }
+
+  function ask(q) {
+    if (!q || !q.trim()) return;
+    append('user', q.trim());
+    input.value = '';
+    typing.style.display = 'inline-flex';
+    stream.scrollTop = stream.scrollHeight;
+    setTimeout(() => {
+      typing.style.display = 'none';
+      append('ai', replies[Math.floor(Math.random() * replies.length)]);
+    }, 1100 + Math.random() * 600);
+  }
+
+  send.addEventListener('click', () => ask(input.value));
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') ask(input.value); });
+
+  document.querySelectorAll('[data-q]').forEach(b => {
+    b.addEventListener('click', e => { e.preventDefault(); ask(b.dataset.q); });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Entrar — KORA</title>
+  <link rel="stylesheet" href="../assets/css/app.css">
+</head>
+<body>
+
+<div class="device">
+  <div class="device__screen">
+
+    <div class="status-bar">
+      <span>9:41</span>
+      <span class="status-bar__icons"><span>●●●</span> <span>●</span></span>
+    </div>
+
+    <div class="screen screen--no-tab" style="display:flex; flex-direction:column; padding-bottom:20px">
+
+      <!-- Brand block -->
+      <div style="padding: 32px 24px 12px; text-align: center">
+        <div style="font-size: 14px; letter-spacing: .35em; font-weight: 700; color: var(--fg-muted)">KORA</div>
+        <h1 class="h1" style="margin-top: 16px; font-size: 30px">Entrar na <em style="font-style:italic; font-weight:300; color: var(--accent)">sua conta</em></h1>
+        <p class="muted txt-sm" style="margin-top: 8px">Inteligência financeira a cada acesso.</p>
+      </div>
+
+      <!-- Form -->
+      <div style="padding: 16px 24px; flex: 1">
+        <div id="login-step">
+          <div class="field" style="margin-bottom: 16px">
+            <label class="field__label">E-mail</label>
+            <input class="input" type="email" placeholder="você@exemplo.com" value="carolina.silva@kora.app">
+          </div>
+          <div class="field" style="margin-bottom: 12px">
+            <label class="field__label">Senha</label>
+            <input class="input" type="password" placeholder="••••••••" value="••••••••••">
+          </div>
+          <div style="text-align: right; margin-bottom: 20px">
+            <a class="badge" href="#" style="border:none; background:none; color: var(--accent); padding:0">Esqueci minha senha</a>
+          </div>
+          <button class="btn btn--primary" onclick="document.getElementById('login-step').classList.add('hidden'); document.getElementById('mfa-step').classList.remove('hidden')">Continuar</button>
+        </div>
+
+        <div id="mfa-step" class="hidden">
+          <div style="text-align: center; margin-bottom: 24px">
+            <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--bg-warm); color: var(--accent); display: grid; place-items: center; margin: 0 auto; font-weight: 800; font-size: 22px">🔒</div>
+            <div style="font-weight: 800; font-size: 18px; margin-top: 12px">Verificação MFA</div>
+            <p class="muted txt-sm" style="margin-top: 6px">Insira o código de 6 dígitos do seu autenticador.</p>
+          </div>
+          <div class="field" style="margin-bottom: 20px">
+            <input class="input" placeholder="000 000" maxlength="6" inputmode="numeric"
+                   style="font-size: 24px; letter-spacing: .5em; text-align: center; font-weight: 800">
+          </div>
+          <a href="inicio.html" class="btn btn--primary">Entrar</a>
+          <div style="text-align: center; margin-top: 16px">
+            <a href="#" class="muted" style="font-size: 12px">Não tenho acesso ao código</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom -->
+      <div style="padding: 16px 24px; border-top: 1px solid var(--line-soft)">
+        <div class="row" style="gap: 16px; justify-content: center; font-size: 11px; color: var(--fg-subtle); flex-wrap: wrap">
+          <span>🔒 TLS 1.3</span>
+          <span>· Argon2id</span>
+          <span>· JWT RS256</span>
+        </div>
+        <div style="text-align: center; margin-top: 12px">
+          <a class="muted txt-sm" href="#">Não tem conta? <strong style="color: var(--accent)">Criar agora</strong></a>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script src="../assets/js/app.js"></script>
+</body>
+</html>

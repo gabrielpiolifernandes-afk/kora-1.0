@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KORA — App de Inteligência Financeira</title>
+  <link rel="stylesheet" href="assets/css/app.css">
+  <style>
+    body { background: linear-gradient(180deg, #1A1A1A 0%, #2A2A2A 100%); display: block; padding: 0; }
+    .head {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 80px 40px 40px;
+      color: var(--bg);
+    }
+    .head__brand {
+      font-size: 14px;
+      letter-spacing: .35em;
+      font-weight: 700;
+      color: var(--accent-soft);
+    }
+    .head__title {
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      font-weight: 800;
+      letter-spacing: -.035em;
+      line-height: .98;
+      margin: 16px 0 12px;
+    }
+    .head__title em {
+      font-style: italic;
+      font-weight: 300;
+      color: var(--accent-soft);
+    }
+    .head__lead {
+      font-size: 18px;
+      color: rgba(255,255,255,.7);
+      max-width: 640px;
+      line-height: 1.5;
+    }
+    .meta {
+      display: flex; gap: 40px;
+      margin-top: 32px;
+      flex-wrap: wrap;
+    }
+    .meta__item .k {
+      font-size: 11px;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.5);
+      font-weight: 700;
+    }
+    .meta__item .v {
+      font-size: 16px;
+      color: var(--bg);
+      margin-top: 4px;
+      font-weight: 700;
+    }
+
+    .palette {
+      display: flex; gap: 12px;
+      max-width: 1200px;
+      margin: 24px auto 0;
+      padding: 0 40px;
+      flex-wrap: wrap;
+    }
+    .swatch {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(255,255,255,.04);
+      padding: 8px 14px 8px 8px;
+      border-radius: 99px;
+    }
+    .swatch__dot {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.1);
+    }
+    .swatch__name {
+      font-size: 12px;
+      color: rgba(255,255,255,.85);
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+    .swatch__hex {
+      font-family: monospace;
+      font-size: 11px;
+      color: rgba(255,255,255,.45);
+      margin-left: 4px;
+    }
+
+    .grid-screens {
+      max-width: 1400px;
+      margin: 60px auto 0;
+      padding: 0 40px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 60px 40px;
+      justify-items: center;
+    }
+
+    .frame {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .frame__device {
+      width: 320px;
+      height: 692px;  /* 320 / 390 * 844 */
+      border-radius: 40px;
+      background: var(--kora-black);
+      padding: 10px;
+      box-shadow:
+        0 0 0 1.5px #444 inset,
+        0 24px 48px rgba(0,0,0,.4),
+        0 6px 16px rgba(0,0,0,.25);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .frame__device::before {
+      content: "";
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 105px;
+      height: 25px;
+      background: var(--kora-black);
+      border-radius: 0 0 14px 14px;
+      z-index: 5;
+    }
+
+    .frame__iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      border-radius: 32px;
+      background: var(--bg);
+      display: block;
+    }
+
+    .frame__caption {
+      text-align: center;
+      color: var(--bg);
+    }
+    .frame__caption .num {
+      font-size: 11px;
+      letter-spacing: .25em;
+      color: rgba(255,255,255,.4);
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .frame__caption .name {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -.01em;
+      margin-top: 4px;
+      color: var(--bg);
+    }
+    .frame__caption .desc {
+      font-size: 12px;
+      color: rgba(255,255,255,.55);
+      margin-top: 4px;
+      max-width: 280px;
+    }
+    .frame__caption a {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--accent-soft);
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      font-weight: 700;
+      border-bottom: 1px solid var(--accent-soft);
+      padding-bottom: 1px;
+    }
+
+    .footer-strip {
+      max-width: 1200px;
+      margin: 100px auto 0;
+      padding: 32px 40px 60px;
+      border-top: 1px solid rgba(255,255,255,.1);
+      color: rgba(255,255,255,.55);
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    @media (max-width: 600px) {
+      .head { padding: 40px 20px 20px; }
+      .grid-screens { padding: 0 20px; gap: 40px 20px; }
+      .frame__device { width: 280px; height: 606px; }
+      .palette { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header editorial -->
+<header class="head">
+  <div class="head__brand">KORA · SOLUÇÕES COM IA</div>
+  <h1 class="head__title">App de inteligência <em>financeira</em>.</h1>
+  <p class="head__lead">
+    Mais do que controlar dinheiro. Entender comportamento financeiro.
+    Score 0–100 vivo, categorização automática e previsão de saldo —
+    tudo numa identidade editorial KORA.
+  </p>
+
+  <div class="meta">
+    <div class="meta__item">
+      <div class="k">Equipe FIAP</div>
+      <div class="v">Carolina · Gabriel · João Victor · Pedro</div>
+    </div>
+    <div class="meta__item">
+      <div class="k">Telas</div>
+      <div class="v">13 mockups interativos</div>
+    </div>
+    <div class="meta__item">
+      <div class="k">Stack visual</div>
+      <div class="v">Aileron · HTML · CSS · JS</div>
+    </div>
+  </div>
+</header>
+
+<!-- Paleta -->
+<div class="palette">
+  <div class="swatch"><div class="swatch__dot" style="background:#1C1C1C"></div><div><span class="swatch__name">Preto Suave</span><span class="swatch__hex">#1C1C1C</span></div></div>
+  <div class="swatch"><div class="swatch__dot" style="background:#F5F3EF"></div><div><span class="swatch__name">Off-White</span><span class="swatch__hex">#F5F3EF</span></div></div>
+  <div class="swatch"><div class="swatch__dot" style="background:#A44A3F"></div><div><span class="swatch__name">Vermelho Queimado</span><span class="swatch__hex">#A44A3F</span></div></div>
+  <div class="swatch"><div class="swatch__dot" style="background:#D9D6D1"></div><div><span class="swatch__name">Cinza Claro</span><span class="swatch__hex">#D9D6D1</span></div></div>
+  <div class="swatch"><div class="swatch__dot" style="background:#CBB8A0"></div><div><span class="swatch__name">Bege Quente</span><span class="swatch__hex">#CBB8A0</span></div></div>
+  <div class="swatch"><div class="swatch__dot" style="background:#6E5849"></div><div><span class="swatch__name">Marrom Editorial</span><span class="swatch__hex">#6E5849</span></div></div>
+</div>
+
+<!-- Grid de telas -->
+<section class="grid-screens">
+
+  <div class="frame">
+    <div class="frame__device">
+      <iframe class="frame__iframe" src="screens/splash.html" loading="lazy"></iframe>
+    </div>
+    <div class="frame__caption">
+      <div class="num">01</div>
+      <div class="name">Splash</div>
+      <div class="desc">Boas-vindas com a marca KORA e manifesto.</div>
+      <a href="screens/splash.html">Abrir tela</a>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="frame__device">
+      <iframe class="frame__iframe" src="screens/login.html" loading="lazy"></iframe>
+    </div>
+    <div class="frame__caption">
+      <div class="num">02</div>
+      <div class="name">Login com MFA</div>
+      <div class="desc">Autenticação em duas etapas (TOTP).</div>
+      <a href="screens/login.html">Abrir tela</a>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="frame__device">
+      <iframe class="frame__iframe" src="screens/inicio.html" loading="lazy"></iframe>
+    </div>
+    <div class="frame__caption">
+      <div class="num">03</div>
+      <div class="name">Início</div>
+      <div class="desc">Saldo, score, KORA AI, mercado, insights, movimentação.</div>
+      <a href="screens/inicio.html">Abrir tela</a>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="frame__device">
+      <iframe class="frame__iframe" src="screens/ia.html" loading="lazy"></iframe>
+    </div>
+    <div class="frame__caption">
+      <div class="num">04</div>
+      <div class="name">KORA AI · Assistente</div>
+      <div class="desc">Chat inteligente sobre suas finanças. Funcional!</div>
+      <a href="screens/ia.html">Abrir tela</a>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="frame__device">
+      <iframe class="frame__iframe" src="screens/mercado.html" loading="lazy"></iframe>
+    </div>
+    <div class="frame__caption">
+      <div class="num">05</div>
+      <div class="name">Mercado em tempo real</div>
+      <div class="desc">Índices, ações, FIIs, cripto, feed ao vivo.</div>
+      <a href="screens/mercado.html">Abrir tela</a>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="frame__device">
+      <iframe class="frame__iframe" src="screens/score.html" loading="lazy"></iframe>
+    </div>
+    <div class="frame__caption">
+      <div class="num">06</div>
+      <div class="name">Score Comportamental</div>
+      <div class="desc">Hero do score + decomposição dos 4 pilares.</div>
+      <a href="screens/score.html">Abrir tela</a>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="frame__device">
+      <iframe class="frame__iframe" src="screens/extrato.html" loading="lazy"></iframe>
+    </div>
+    <div class="frame__caption">
+      <div class="num">07</div>
+      <div class="name">Extrato</div>
+      <div class="desc">Lista agrupada por data, com filtros chip.</div>
+      <a href="screens/extrato.html">Abrir tela</a>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="frame__device">
+      <iframe class="frame__iframe" src="screens/transacao.html" loading="lazy"></iframe>
+    </div>
+    <div class="frame__caption">
+      <div class="num">08</div>
+      <div class="name">Detalhe de Transação</div>
+      <div class="desc">Categorização IA editável, dados completos.</div>
+      <a href="screens/transacao.html">Abrir tela</a>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="frame__device">
+      <iframe class="frame__iframe" src="screens/cartao.html" loading="lazy"></iframe>
+    </div>
+    <div class="frame__caption">
+      <div class="num">09</div>
+      <div class="name">Cartão KORA</div>
+      <div class="desc">Cartão visual, limite, fatura, ajustes.</div>
+      <a href="screens/cartao.html">Abrir tela</a>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="frame__device">
+      <iframe class="frame__iframe" src="screens/insights.html" loading="lazy"></iframe>
+    </div>
+    <div class="frame__caption">
+      <div class="num">10</div>
+      <div class="name">Insights</div>
+      <div class="desc">Alertas, conquistas e oportunidades.</div>
+      <a href="screens/insights.html">Abrir tela</a>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="frame__device">
+      <iframe class="frame__iframe" src="screens/previsao.html" loading="lazy"></iframe>
+    </div>
+    <div class="frame__caption">
+      <div class="num">11</div>
+      <div class="name">Previsão</div>
+      <div class="desc">Saldo projetado a 30 dias com cenários.</div>
+      <a href="screens/previsao.html">Abrir tela</a>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="frame__device">
+      <iframe class="frame__iframe" src="screens/investir.html" loading="lazy"></iframe>
+    </div>
+    <div class="frame__caption">
+      <div class="num">12</div>
+      <div class="name">Investir</div>
+      <div class="desc">Posição, recomendações coerentes com o score.</div>
+      <a href="screens/investir.html">Abrir tela</a>
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="frame__device">
+      <iframe class="frame__iframe" src="screens/perfil.html" loading="lazy"></iframe>
+    </div>
+    <div class="frame__caption">
+      <div class="num">13</div>
+      <div class="name">Eu (perfil)</div>
+      <div class="desc">LGPD, segurança, sessões, exportação de dados.</div>
+      <a href="screens/perfil.html">Abrir tela</a>
+    </div>
+  </div>
+
+</section>
+
+<footer class="footer-strip">
+  <span>© 2026 KORA · Soluções com IA</span>
+  <span>Carolina · Gabriel · João Victor · Pedro · FIAP 2026</span>
+</footer>
+
+</body>
+</html>
